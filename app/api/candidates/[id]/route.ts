@@ -12,7 +12,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       where: { id: candidateId },
       include: {
         resumes: true, // Include resumes
-        scores: true,  // Include ATS scores
+        atsScores: true,  // Include ATS scores (correct field name)
       },
     });
 

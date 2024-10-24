@@ -66,29 +66,22 @@ model Candidate {
   id        Int         @id @default(autoincrement())
   name      String
   createdAt DateTime    @default(now())
-  resumes   Resume[]    // A candidate can have multiple resumes
-  scores    ATS_Score[] // A candidate can have multiple ATS scores
-  summaries Summary[]   // A candidate can have multiple summaries
-  jobDescriptions JobDescription[]  // A candidate can have multiple job descriptions
-}
-
-// Define the Summary model
-model Summary {
-  id          Int       @id @default(autoincrement())
-  content     String
-  createdAt   DateTime  @default(now())
-  candidateId Int
-  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  
+  resumes   Resume[]     // Back relation to Resume
+  atsScores ATS_Score[]  // Back relation to ATS_Score
 }
 
 // Define the Resume model
 model Resume {
-  id          Int       @id @default(autoincrement())
-  filename    String
-  fileUrl     String
-  uploadedAt  DateTime  @default(now())
-  candidateId Int
-  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  id                  Int         @id @default(autoincrement())
+  Resumefilename      String
+  ResumefileUrl       String
+  uploadedAt          DateTime    @default(now())
+  JobDescriptionfileUrl String
+  candidateId         Int
+  candidate           Candidate   @relation(fields: [candidateId], references: [id])
+  
+  atsScores           ATS_Score[] // Back relation to ATS_Score
 }
 
 // Define the ATS_Score model
@@ -99,13 +92,6 @@ model ATS_Score {
   createdAt   DateTime  @default(now())
   candidateId Int
   candidate   Candidate @relation(fields: [candidateId], references: [id])
-}
-
-// Define the JobDescription model
-model JobDescription {
-  id          Int       @id @default(autoincrement())
-  fileUrl     String    // S3 URL for the job description file
-  uploadedAt  DateTime  @default(now())
-  candidateId Int
-  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  resumeId    Int
+  resume      Resume    @relation(fields: [resumeId], references: [id])
 }

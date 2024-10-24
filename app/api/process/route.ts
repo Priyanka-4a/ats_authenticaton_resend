@@ -68,7 +68,7 @@ async function uploadResumeToS3(file: Buffer, fileName: string) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { jobDescription, resumeTexts, fileNames, weights, candidateId } = await request.json();
+    const { jobDescription, resumeTexts, fileNames, weights, candidateId, resumeId } = await request.json();
 
     if (
       !jobDescription ||
@@ -76,7 +76,8 @@ export async function POST(request: NextRequest) {
       resumeTexts.length === 0 ||
       !fileNames ||
       fileNames.length === 0 ||
-      !candidateId
+      !candidateId ||
+      !resumeId
     ) {
       return NextResponse.json(
         { error: "Job description, resume texts, file names, or candidate ID are missing." },
@@ -113,6 +114,7 @@ export async function POST(request: NextRequest) {
           score: atsCompatibilityScore,
           summary: openAiResponse,
           candidateId: candidateIdInt, // Use integer ID
+          resumeId: parseInt(resumeId, 10)
         },
       });
 

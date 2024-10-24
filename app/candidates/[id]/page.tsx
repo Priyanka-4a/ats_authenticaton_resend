@@ -9,7 +9,7 @@ async function getCandidate(id: number) {
     where: { id },
     include: {
       resumes: true,  // Fetch resumes related to this candidate
-      scores: true,   // Fetch ATS scores related to this candidate
+      atsScores: true,   // Fetch ATS scores related to this candidate
     },
   });
   return candidate;
@@ -31,6 +31,19 @@ export default async function CandidatePage({ params }: { params: { id: string }
     return redirect(`/candidates/${candidateId}/no-resume`);
   }
 
+  // Convert dates to strings to pass to the client component
+  const candidateSerialized = {
+    ...candidate,
+    resumes: candidate.resumes.map((resume) => ({
+      ...resume,
+      uploadedAt: resume.uploadedAt.toISOString(),
+    })),
+    scores: candidate.atsScores.map((score) => ({
+      ...score,
+      createdAt: score.createdAt.toISOString(),
+    })),
+  };
+
   // Pass candidate data to the client component for rendering
   return (
     <div className="container mx-auto p-6">
@@ -47,7 +60,7 @@ export default async function CandidatePage({ params }: { params: { id: string }
       </div>
 
       {/* Render the ResumeTable Client Component */}
-      <ResumeTable candidate={candidate} />
+      <ResumeTable candidate={candidateSerialized} />
 
       <Link href="/" className="text-blue-500 mt-4 block">
         Go Back

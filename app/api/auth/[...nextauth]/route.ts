@@ -1,10 +1,11 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { Resend } from "resend";
-import prisma from "@/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import EmailProvider from "next-auth/providers/email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const prisma = new PrismaClient();
 
 // Moving email generation to a helper function
 function generateEmailHtml(magicLink: string) {

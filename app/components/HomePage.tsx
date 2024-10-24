@@ -126,20 +126,10 @@ export default function HomePageContent() {
           <h1 className="text-2xl font-bold mb-6">ATS</h1>
           <ul>
             <li className="mb-4">
-              <a href="/candidates" className="text-lg text-gray-700 hover:text-black">
+              <a href="/" className="text-lg text-gray-700 hover:text-black">
                 Candidates
               </a>
             </li>
-            {/* <li className="mb-4">
-              <a href="/jobs" className="text-lg text-gray-700 hover:text-black">
-                Jobs
-              </a>
-            </li>
-            <li className="mb-4">
-              <a href="/reports" className="text-lg text-gray-700 hover:text-black">
-                Reports
-              </a>
-            </li> */}
             <li className="mb-4">
               <a href="/settings" className="text-lg text-gray-700 hover:text-black">
                 Settings
