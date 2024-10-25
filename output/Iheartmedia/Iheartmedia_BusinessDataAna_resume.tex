@@ -1,0 +1,199 @@
+%==== PACKAGES AND OTHER DOCUMENT CONFIGURATIONS  ====% 
+\documentclass{resume} % Use the custom resume.cls style
+\usepackage[left=1in,top=1in,right=1in,bottom=1in]{geometry} % Reduce top margin
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{fancyhdr} % For custom headers and footers
+\usepackage{needspace} % Ensure space at the start of a new page
+
+% Define your custom colors
+\definecolor{myblue}{RGB}{0, 164, 218}
+
+% Set hyperlink colors
+\hypersetup{
+    colorlinks=true,
+    linkcolor=myblue,
+    citecolor=myblue,
+    urlcolor=myblue
+}
+
+%==== HEADER SECTION ====%
+
+% Increase text size
+\fontsize{12pt}{15pt}\selectfont
+
+% Set custom header
+\pagestyle{fancy}
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[L]{
+    \begin{flushleft}
+        MD Agile Team Resources \\ 
+        TO\#F50B0600045-53 \hfill None % TO number and name aligned
+    \end{flushleft}
+    \rule{\linewidth}{0.7pt}
+}
+
+\renewcommand{\headrulewidth}{0pt} % Remove the default header rule
+
+% Customize the footer with a horizontal rule above the page number
+\fancyfoot[C]{
+    \vspace{-10pt}    % Adjust vertical space to position the line closer to the footer
+    \hrule height 0.4pt    % Horizontal line, thickness 0.4pt (adjust as needed)
+    \vspace{2pt}      % Small space between line and page number
+    Page \thepage     % Place the page number in the center
+}
+\setlength{\headsep}{20 pt}
+
+\begin{document}
+
+% Proposed Resource section with bold headings
+\begin{flushleft}
+    \textbf{Proposed Resource Name:} None \\
+    \textbf{Resource Type:} Information Security Officer/Subject Matter Expert \\
+    \textbf{CATS+ Labor Category:} Subject Matter Expert
+\end{flushleft}
+
+% Ensure space when starting on a new page
+\needspace{5\baselineskip} % Ensure space at the top of a new page
+\vspace{1.3em}
+
+% Summary Section
+\begin{rSection}{EXPERIENCE}
+        \begin{flushleft}
+        Organized and dependable candidate successful at managing multiple priorities with a positive attitude. Willingness to take on added responsibilities to meet team goals. With 7 years of experience in data analysis, building new sources of information and ideas, always focusing on problem{-}solving and generating value for the business and its needs. \\
+        \vspace{1em} 
+                    % Add space if content starts on a new page
+            \needspace{5\baselineskip}
+            \textbf{IT.HEALTH} \hfill \textbf{March 2023 {-} Now} \\
+            \textbf{Senior Analytics Engineer} \\
+            \vspace{1em}
+            \textbf{Responsibilities:} \\
+            \begin{itemize}
+                                    \item Processed JSON files and loaded data into the production environment using Python libraries, enhancing data accessibility and efficiency.
+                                    \item Conducted ETL with SQL SERVER data and integrated processed data into Google Sheets, streamlining reporting processes.
+                                    \item Administered RLS access permissions in Power BI Embedded, improving data security and user access management.
+                            \end{itemize}
+            \vspace{0.5em}
+                    % Add space if content starts on a new page
+            \needspace{5\baselineskip}
+            \textbf{Brida} \hfill \textbf{July 2022 {-} March 2023} \\
+            \textbf{Senior Data Analyst} \\
+            \vspace{1em}
+            \textbf{Responsibilities:} \\
+            \begin{itemize}
+                                    \item Implemented marketing intelligence for the sales department using Qlik Sense, enhancing data{-}driven decision{-}making.
+                                    \item Migrated views from Qlik View to Sense, improving data visualization capabilities.
+                                    \item Administered governance of permissions, licenses, and connections within the QMC, ensuring compliance and security.
+                            \end{itemize}
+            \vspace{0.5em}
+                    % Add space if content starts on a new page
+            \needspace{5\baselineskip}
+            \textbf{Companhia das Letras} \hfill \textbf{October 2021 {-} July 2022} \\
+            \textbf{Senior Data Analyst} \\
+            \vspace{1em}
+            \textbf{Responsibilities:} \\
+            \begin{itemize}
+                                    \item Established the company's BI department from scratch, creating KPIs for internal and external monitoring, enhancing performance tracking.
+                                    \item Utilized Pentaho for ETL and data ingestion into Snowflake, optimizing data processing workflows.
+                                    \item Developed a data quality testing workflow, ensuring robust processes and reliable information.
+                            \end{itemize}
+            \vspace{0.5em}
+                    % Add space if content starts on a new page
+            \needspace{5\baselineskip}
+            \textbf{Funcional Health Tech} \hfill \textbf{November 2020 {-} October 2021} \\
+            \textbf{Senior Data Analyst} \\
+            \vspace{1em}
+            \textbf{Responsibilities:} \\
+            \begin{itemize}
+                                    \item Extracted insights and conducted study projections, creating dashboards in Tableau for clients, enhancing data visualization.
+                                    \item Built ETL routines using Pentaho to populate the company's Data Warehouse, improving data management.
+                                    \item Trained new leaders on the use and understanding of each visualization, fostering data literacy.
+                            \end{itemize}
+            \vspace{0.5em}
+                    % Add space if content starts on a new page
+            \needspace{5\baselineskip}
+            \textbf{TEx} \hfill \textbf{October 2019 {-} November 2020} \\
+            \textbf{Data Analyst} \\
+            \vspace{1em}
+            \textbf{Responsibilities:} \\
+            \begin{itemize}
+                                    \item Migrated systems from other insurers to the TELEPORT system, ensuring data integrity and quality.
+                                    \item Played an active role in encryption changes due to LGPD regulations, enhancing data security.
+                                    \item Utilized Power BI for data visualization and programming in DAX, improving analytical capabilities.
+                            \end{itemize}
+            \vspace{0.5em}
+                    % Add space if content starts on a new page
+            \needspace{5\baselineskip}
+            \textbf{Certisign} \hfill \textbf{March 2019 {-} October 2019} \\
+            \textbf{Security and Support Analyst} \\
+            \vspace{1em}
+            \textbf{Responsibilities:} \\
+            \begin{itemize}
+                                    \item Supported maintenance, issuance, unlocking, and configuration related to digital certification, ensuring operational efficiency.
+                                    \item Issued reports and generated certificates for exceptional cases, enhancing service delivery.
+                                    \item Identified fraud or phishing attempts and provided technical support for certification in the Cloud, improving security measures.
+                            \end{itemize}
+            \vspace{0.5em}
+                    % Add space if content starts on a new page
+            \needspace{5\baselineskip}
+            \textbf{Concentrix} \hfill \textbf{June 2018 {-} January 2019} \\
+            \textbf{Applecare Consultant} \\
+            \vspace{1em}
+            \textbf{Responsibilities:} \\
+            \begin{itemize}
+                                    \item Identified hardware and software errors on iPhone and Mac platforms, providing effective technical support.
+                                    \item Provided technical support for iOS and MacOS systems, enhancing customer satisfaction.
+                            \end{itemize}
+            \vspace{0.5em}
+                    % Add space if content starts on a new page
+            \needspace{5\baselineskip}
+            \textbf{ML COMERCIO} \hfill \textbf{October 2017 {-} June 2018} \\
+            \textbf{IT Consultant} \\
+            \vspace{1em}
+            \textbf{Responsibilities:} \\
+            \begin{itemize}
+                                    \item Managed the company's network and system, ensuring seamless operations.
+                                    \item Performed hardware and software maintenance, enhancing system reliability.
+                                    \item Configured the Kinghost Webmail Service and TCP{-}IP on servers, improving communication infrastructure.
+                            \end{itemize}
+            \vspace{0.5em}
+            \end{flushleft} 
+\end{rSection}
+
+\begin{rSection}{TECHNICAL SKILLS}
+    \begin{flushleft}
+        % Ensure space when starting on a new page
+        \needspace{5\baselineskip}
+                    \textbf{Data Analytics and Management}: Senior Living Management, Analytics Expertise, Data Analytics Proficiency, Advanced Analytics, SQL Analytics, Pentaho Data Integration, Power BI, Databricks \\
+                    \textbf{Attention to Detail}: Attention to Detail \\
+                    \textbf{Languages}: English {-} Upper Intermediate (B2), Portuguese {-} Bilingual or Proficient (C2) \\
+            \end{flushleft}
+\end{rSection}
+
+\begin{rSection}{EDUCATION}
+    \begin{flushleft}
+    \begin{itemize}
+        % Ensure space when starting on a new page
+        \needspace{5\baselineskip}
+                    \item Bachelor of Science in Database Technology, FAM, 2024 \\
+                    \item Associate Degree in Chemistry, Pentagono, 2015 \\
+            \end{itemize}
+    \end{flushleft}
+\end{rSection}
+
+\begin{rSection}{CERTIFICATIONS}
+    \begin{flushleft}
+            \begin{itemize}
+                                    % Ensure space when starting on a new page
+                    \needspace{5\baselineskip}
+                    \item Data Science and Python International Certificate, Ultima School, 2022 \\
+                                    % Ensure space when starting on a new page
+                    \needspace{5\baselineskip}
+                    \item Databricks Lakehouse Fundamentals, Databricks, 2023 \\
+                            \end{itemize}
+        \end{flushleft}
+\end{rSection}
+
+\end{document}

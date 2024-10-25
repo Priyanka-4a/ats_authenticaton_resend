@@ -1,0 +1,120 @@
+%==== PACKAGES AND OTHER DOCUMENT CONFIGURATIONS  ====% 
+\documentclass{resume} % Use the custom resume.cls style
+\usepackage[left=1in,top=1in,right=1in,bottom=1in]{geometry} % Reduce top margin
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{fancyhdr} % For custom headers and footers
+\usepackage{needspace} % Ensure space at the start of a new page
+
+% Define your custom colors
+\definecolor{myblue}{RGB}{0, 164, 218}
+
+% Set hyperlink colors
+\hypersetup{
+    colorlinks=true,
+    linkcolor=myblue,
+    citecolor=myblue,
+    urlcolor=myblue
+}
+
+%==== HEADER SECTION ====%
+
+% Increase text size
+\fontsize{12pt}{15pt}\selectfont
+
+% Set custom header
+\pagestyle{fancy}
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[L]{
+    \begin{flushleft}
+        MD Agile Team Resources \\ 
+        TO\#F50B0600045-53 \hfill \VAR{personal.name} % TO number and name aligned
+    \end{flushleft}
+    \rule{\linewidth}{0.7pt}
+}
+
+\renewcommand{\headrulewidth}{0pt} % Remove the default header rule
+
+% Customize the footer with a horizontal rule above the page number
+\fancyfoot[C]{
+    \vspace{-10pt}    % Adjust vertical space to position the line closer to the footer
+    \hrule height 0.4pt    % Horizontal line, thickness 0.4pt (adjust as needed)
+    \vspace{2pt}      % Small space between line and page number
+    Page \thepage     % Place the page number in the center
+}
+\setlength{\headsep}{20 pt}
+
+\begin{document}
+
+% Proposed Resource section with bold headings
+\begin{flushleft}
+    \textbf{Proposed Resource Name:} \VAR{personal.name} \\
+    \textbf{Resource Type:} Information Security Officer/Subject Matter Expert \\
+    \textbf{CATS+ Labor Category:} Subject Matter Expert
+\end{flushleft}
+
+% Ensure space when starting on a new page
+\needspace{5\baselineskip} % Ensure space at the top of a new page
+\vspace{1.3em}
+
+% Summary Section
+\begin{rSection}{EXPERIENCE}
+        \begin{flushleft}
+        \VAR{personal.summary} \\
+        \vspace{1em} 
+        \BLOCK{ for exp in work_experience }
+            % Add space if content starts on a new page
+            \needspace{5\baselineskip}
+            \textbf{\VAR{exp.Job}} \hfill \textbf{\VAR{exp.Duration}} \\
+            \textbf{\VAR{exp.JobTitle}} \\
+            \vspace{1em}
+            \textbf{Responsibilities:} \\
+            \begin{itemize}
+                \BLOCK{ for res in exp.Responsibilities }
+                    \item \VAR{res}
+                \BLOCK{ endfor }
+            \end{itemize}
+            \vspace{0.5em}
+        \BLOCK{ endfor }
+    \end{flushleft} 
+\end{rSection}
+
+\begin{rSection}{TECHNICAL SKILLS}
+    \begin{flushleft}
+        % Ensure space when starting on a new page
+        \needspace{5\baselineskip}
+        \BLOCK{ for section in skill_section }
+            \textbf{\VAR{section.name}}: \VAR{', '.join(section.skills)} \\
+        \BLOCK{ endfor }
+    \end{flushleft}
+\end{rSection}
+
+\begin{rSection}{EDUCATION}
+    \begin{flushleft}
+    \begin{itemize}
+        % Ensure space when starting on a new page
+        \needspace{5\baselineskip}
+        \BLOCK{ for edu in education }
+            \item \VAR{edu.university} \\
+        \BLOCK{ endfor }
+    \end{itemize}
+    \end{flushleft}
+\end{rSection}
+
+\BLOCK{ if certifications }
+\begin{rSection}{CERTIFICATIONS}
+    \begin{flushleft}
+            \begin{itemize}
+                \BLOCK{ for certification in certifications }
+                    % Ensure space when starting on a new page
+                    \needspace{5\baselineskip}
+                    \item \VAR{certification.name} \\
+                \BLOCK{ endfor }
+            \end{itemize}
+        \end{flushleft}
+\end{rSection}
+\BLOCK{ endif }
+
+\end{document}

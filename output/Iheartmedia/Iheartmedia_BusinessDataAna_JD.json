@@ -1,0 +1,49 @@
+{
+  "job_title": "Business Data Analyst",
+  "job_purpose": "Transform raw data into actionable insights to drive planning recommendations and revenue, collaborating with stakeholders to optimize campaigns for iHeartMedia's marketing partners.",
+  "keywords": [
+    "Data Analysis",
+    "Data Visualization",
+    "Google Cloud Platform",
+    "SQL",
+    "Tableau",
+    "Power BI",
+    "Statistical Analysis",
+    "R",
+    "Python",
+    "Machine Learning",
+    "Analytical Skills",
+    "Problem Solving",
+    "Communication Skills",
+    "Presentation Skills"
+  ],
+  "job_duties_and_responsibilities": [
+    "Gather data from various sources, including internal sources, external vendors, and market research.",
+    "Clean, validate, and preprocess data to ensure accuracy and consistency.",
+    "Apply statistical and analytical techniques to explore and interpret data, uncover trends, and identify correlations.",
+    "Develop informative and visually appealing reports, dashboards, and presentations to communicate findings to stakeholders.",
+    "Use data visualization tools to create impactful charts, graphs, and other visuals that highlight key insights and trends.",
+    "Collaborate with different departments to understand their business challenges and translate them into data-driven solutions.",
+    "Apply analytical skills to solve complex business problems, optimize processes, and identify areas for improvement.",
+    "Ensure the accuracy and reliability of data by implementing data quality checks and validation processes.",
+    "Maintain and update documentation related to data sources, transformations, and analysis.",
+    "Work closely with cross-functional teams, including marketing, sales, operations, and externally facing clients to gather requirements, understand business objectives, and present findings in a clear and concise manner.",
+    "Communicate technical information to non-technical audiences effectively."
+  ],
+  "required_qualifications": [
+    "Bachelor's degree in Business Analytics, Statistics, Mathematics, Computer Science, or a related field.",
+    "2+ years of experience in a data analyst or similar role, preferably in a business setting.",
+    "Proficiency in SQL for data extraction and manipulation.",
+    "Strong knowledge of data visualization tools such as Tableau, Power BI, or similar.",
+    "Excellent analytical and problem-solving skills.",
+    "Strong communication and presentation skills.",
+    "Ability to translate complex data into actionable insights.",
+    "Ability to work independently and collaboratively within a team environment."
+  ],
+  "preferred_qualifications": [
+    "Experience with statistical analysis software (e.g., R, Python).",
+    "Familiarity with machine learning concepts and techniques."
+  ],
+  "company_name": "iHeartMedia",
+  "company_details": "America's #1 audio company, iHeartMedia is known for its innovative marketing solutions and commitment to transforming data into actionable insights for its partners."
+}

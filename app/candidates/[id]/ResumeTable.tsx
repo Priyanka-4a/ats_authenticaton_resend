@@ -23,49 +23,47 @@ interface Candidate {
 }
 
 export default function ResumeTable({ candidate }: { candidate: Candidate }) {
-  const [openSummaryIndex, setOpenSummaryIndex] = useState<number | null>(null); // Track which resume's summary is open
-  const [showJobDescription, setShowJobDescription] = useState<number | null>(null); // Track which job description is open
-  const [jobDescriptionText, setJobDescriptionText] = useState<string>(""); // Store job description text
-  const [loading, setLoading] = useState<boolean>(false); // Track loading state
+  const [openSummaryIndex, setOpenSummaryIndex] = useState<number | null>(null);
+  const [showJobDescription, setShowJobDescription] = useState<number | null>(null);
+  const [jobDescriptionText, setJobDescriptionText] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
-  // Function to handle the view summary button click
   const handleViewSummaryClick = (index: number) => {
     if (openSummaryIndex === index) {
-      setOpenSummaryIndex(null); // Close if clicked again
+      setOpenSummaryIndex(null);
     } else {
-      setOpenSummaryIndex(index); // Set the clicked resume's index
+      setOpenSummaryIndex(index);
     }
   };
 
-  const handleModifyResumeClick = () => {
-    // Redirects to /modifyresume/<candidateId>/<resumeId>
-    router.push(`/modifyresume/page.tsx`);
+  const handleModifyResumeClick = (resumeUrl: string, jobUrl: string) => {
+    // Redirect to the modify page with resumeUrl and jobUrl as query parameters
+    router.push(`/modifyresume?resumeUrl=${encodeURIComponent(resumeUrl)}&jobUrl=${encodeURIComponent(jobUrl)}`);
   };
 
   const handleJobDescriptionClick = async (index: number) => {
-    setShowJobDescription(index); // Open the modal for the selected job description
-    setLoading(true); // Show loading state
+    setShowJobDescription(index);
+    setLoading(true);
 
     const jobDescriptionUrl = candidate.resumes[index].JobDescriptionfileUrl;
     try {
-      // Fetch the content of the job description from the S3 URL
       const response = await fetch(jobDescriptionUrl);
       if (response.ok) {
-        const text = await response.text(); // Extract text content from the file
-        setJobDescriptionText(text); // Set the text to be displayed in the modal
+        const text = await response.text();
+        setJobDescriptionText(text);
       } else {
         setJobDescriptionText("Failed to load Job Description");
       }
     } catch (error) {
       setJobDescriptionText("Error fetching Job Description");
     }
-    setLoading(false); // Stop loading state
+    setLoading(false);
   };
 
   const handleCloseModal = () => {
-    setShowJobDescription(null); // Close the modal
-    setJobDescriptionText(""); // Clear the stored job description text
+    setShowJobDescription(null);
+    setJobDescriptionText("");
   };
 
   return (
@@ -83,9 +81,9 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
         </thead>
         <tbody>
           {candidate.resumes.map((resume, index) => {
-            const atsScore = candidate.atsScores[index]?.score || "N/A"; // Assuming score corresponds to resume order
-            const summary = candidate.atsScores[index]?.summary || "No summary available"; // Assuming summary corresponds to resume order
-            const [isDropdownOpen, setDropdownOpen] = useState(false); // State to handle dropdown visibility
+            const atsScore = candidate.atsScores[index]?.score || "N/A";
+            const summary = candidate.atsScores[index]?.summary || "No summary available";
+            const [isDropdownOpen, setDropdownOpen] = useState(false);
 
             return (
               <tr key={resume.id} className="border-b border-gray-200">
@@ -101,7 +99,6 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
                 </td>
                 <td className="border p-2">{new Date(resume.uploadedAt).toLocaleDateString()}</td>
                 <td className="border p-2 relative">
-                  {/* Dropdown Trigger Button */}
                   <button
                     onClick={() => setDropdownOpen(!isDropdownOpen)}
                     className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -116,7 +113,6 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
                     </svg>
                   </button>
 
-                  {/* Dropdown Menu */}
                   {isDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                       <div className="py-1">
@@ -124,15 +120,6 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                           onClick={() => handleViewSummaryClick(index)}
                         >
-                          <svg
-                            className="mr-3 h-5 w-5 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 6h8M8 10h8M8 14h8M5 6h.01M5 10h.01M5 14h.01" />
-                          </svg>
                           View Summary
                         </button>
                         <a
@@ -141,45 +128,18 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
                           rel="noopener noreferrer"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                         >
-                          <svg
-                            className="mr-3 h-5 w-5 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                          </svg>
                           Download
                         </a>
                         <button
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                          onClick={() => handleModifyResumeClick()}
+                          onClick={() => handleModifyResumeClick(resume.ResumefileUrl, resume.JobDescriptionfileUrl)}
                         >
-                          <svg
-                            className="mr-3 h-5 w-5 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 6h8M8 10h8M8 14h8M5 6h.01M5 10h.01M5 14h.01" />
-                          </svg>
                           Modify Resume
                         </button>
                         <button
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                           onClick={() => console.log("Deleting File")}
                         >
-                          <svg
-                            className="mr-3 h-5 w-5 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                          </svg>
                           Delete
                         </button>
                       </div>
@@ -189,8 +149,6 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
               </tr>
             );
           })}
-
-          {/* Show Summary if Open */}
           {openSummaryIndex !== null && (
             <tr>
               <td colSpan={4} className="border p-4 bg-gray-50">
@@ -204,13 +162,11 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
         </tbody>
       </table>
 
-      {/* Modal for Job Description */}
       {showJobDescription !== null && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-lg w-full">
             <h2 className="text-lg font-bold mb-4">Job Description</h2>
             <p className="text-gray-700 mb-4">
-              {/* Render Job Description text */}
               {loading ? "Loading..." : jobDescriptionText || "No Job Description available."}
             </p>
             <button
