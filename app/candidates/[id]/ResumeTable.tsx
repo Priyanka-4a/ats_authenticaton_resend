@@ -9,6 +9,7 @@ interface Resume {
   uploadedAt: string;
   ResumefileUrl: string;
   JobDescriptionfileUrl: string;
+  JobDescription: string;
 }
 
 interface ATS_Score {
@@ -30,17 +31,12 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
   const router = useRouter();
 
   const handleViewSummaryClick = (index: number) => {
-    if (openSummaryIndex === index) {
-      setOpenSummaryIndex(null);
-    } else {
-      setOpenSummaryIndex(index);
-    }
+    setOpenSummaryIndex(index);
   };
 
-  const handleModifyResumeClick = (resumeUrl: string, jobUrl: string) => {
-    // Redirect to the modify page with resumeUrl and jobUrl as query parameters
-    router.push(`/modifyresume?resumeUrl=${encodeURIComponent(resumeUrl)}&jobUrl=${encodeURIComponent(jobUrl)}`);
-  };
+  const handleModifyResumeClick = (candidateId: number, resumeId: number) => {
+    router.push(`/modifyresume?candidateId=${candidateId}&resumeId=${resumeId}`);
+  };  
 
   const handleJobDescriptionClick = async (index: number) => {
     setShowJobDescription(index);
@@ -61,7 +57,11 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
     setLoading(false);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseSummaryModal = () => {
+    setOpenSummaryIndex(null);
+  };
+
+  const handleCloseJobDescriptionModal = () => {
     setShowJobDescription(null);
     setJobDescriptionText("");
   };
@@ -74,7 +74,6 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
           <tr>
             <th className="border p-2 text-left">Filename</th>
             <th className="border p-2 text-left">ATS Score</th>
-            <th className="border p-2 text-left">Job Description</th>
             <th className="border p-2 text-left">Created At</th>
             <th className="border p-2 text-left">Actions</th>
           </tr>
@@ -89,14 +88,6 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
               <tr key={resume.id} className="border-b border-gray-200">
                 <td className="border p-2">{resume.Resumefilename}</td>
                 <td className="border p-2">{atsScore}%</td>
-                <td className="border p-2">
-                  <button
-                    className="text-blue-500 underline"
-                    onClick={() => handleJobDescriptionClick(index)}
-                  >
-                    View
-                  </button>
-                </td>
                 <td className="border p-2">{new Date(resume.uploadedAt).toLocaleDateString()}</td>
                 <td className="border p-2 relative">
                   <button
@@ -122,19 +113,25 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
                         >
                           View Summary
                         </button>
+                        <button
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                          onClick={() => handleJobDescriptionClick(index)}
+                        >
+                          View Job Description
+                        </button>
                         <a
                           href={resume.ResumefileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                         >
-                          Download
+                          Download Resume
                         </a>
                         <button
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                          onClick={() => handleModifyResumeClick(resume.ResumefileUrl, resume.JobDescriptionfileUrl)}
+                          onClick={() => handleModifyResumeClick(candidate.id, resume.id)}
                         >
-                          Modify Resume
+                          Build Resume
                         </button>
                         <button
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
@@ -149,35 +146,50 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
               </tr>
             );
           })}
-          {openSummaryIndex !== null && (
-            <tr>
-              <td colSpan={4} className="border p-4 bg-gray-50">
-                <h3 className="text-lg font-semibold">Summary for {candidate.resumes[openSummaryIndex].Resumefilename}</h3>
-                <p className="text-gray-700 whitespace-pre-line mt-2">
-                  {candidate.atsScores[openSummaryIndex]?.summary || "No summary available for this resume."}
-                </p>
-              </td>
-            </tr>
-          )}
         </tbody>
       </table>
-
-      {showJobDescription !== null && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full">
-            <h2 className="text-lg font-bold mb-4">Job Description</h2>
-            <p className="text-gray-700 mb-4">
-              {loading ? "Loading..." : jobDescriptionText || "No Job Description available."}
-            </p>
-            <button
-              onClick={handleCloseModal}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+      {openSummaryIndex !== null && (
+  <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+    <div className="bg-white p-4 w-[820px] h-[400px] overflow-y-scroll rounded-xl shadow-lg relative">
+      {/* Close Button in Top-Right Corner */}
+      <button
+        onClick={handleCloseSummaryModal}
+        className="absolute top-2 right-2 px-4 py-1 bg-black text-white rounded-full hover:bg-red-600 text-sm"
+      >
+        Close
+      </button>
+      <h3 className="text-md font-semibold mb-1">Summary</h3>
+      <p className="text-sm text-gray-600 whitespace-pre-line">
+        {candidate.atsScores[openSummaryIndex]?.summary || "No summary available for this resume."}
+      </p>
+    </div>
+  </div>
+)}
+{showJobDescription !== null && (
+  <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+    <div className="bg-white p-4 w-[820px] h-[400px] overflow-y-scroll rounded-xl shadow-lg relative">
+      {candidate.resumes[showJobDescription]?.JobDescriptionfileUrl && (
+        <a
+          href={candidate.resumes[showJobDescription]?.JobDescriptionfileUrl}
+          download
+          className="absolute top-2 right-20 px-4 py-1 bg-black text-white rounded-full hover:bg-green-700 text-sm"
+        >
+          Download
+        </a>
       )}
+      <button
+        onClick={handleCloseJobDescriptionModal}
+        className="absolute top-2 right-2 ml-4 px-4 py-1 bg-black text-white rounded-full hover:bg-red-600 text-sm"
+      >
+        Close
+      </button>
+      <h3 className="text-md font-semibold mb-1">Job Description</h3>
+      <p className="text-sm text-gray-700 mb-4">
+        {candidate.resumes[showJobDescription]?.JobDescription || "No Job Description available for this resume."}
+      </p>
+    </div>
+  </div>
+)}
     </div>
   );
 }

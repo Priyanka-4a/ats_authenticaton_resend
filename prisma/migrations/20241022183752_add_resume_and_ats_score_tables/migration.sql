@@ -9,7 +9,8 @@ CREATE TABLE "Resume" (
     "id" SERIAL NOT NULL,
     "Resumefilename" TEXT NOT NULL,
     "ResumefileUrl" TEXT NOT NULL,
-    "JobDescriptionfileUrl" TEXT NOT NULL,
+    "JobDescriptionfileUrl" TEXT NULL,
+    "JobDescription"  TEXT NOT NULL,
     "uploadedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "candidateId" INTEGER NOT NULL,
 

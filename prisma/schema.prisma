@@ -77,7 +77,8 @@ model Resume {
   Resumefilename      String
   ResumefileUrl       String
   uploadedAt          DateTime    @default(now())
-  JobDescriptionfileUrl String
+  JobDescriptionfileUrl String?
+  JobDescription      String
   candidateId         Int
   candidate           Candidate   @relation(fields: [candidateId], references: [id])
   

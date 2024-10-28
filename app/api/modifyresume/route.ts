@@ -1,29 +1,36 @@
 import { NextResponse } from 'next/server';
+import { prisma } from "@/lib/prisma"; // Adjust path based on your project structure
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const jobUrl = searchParams.get('jobUrl');
+  const candidateId = searchParams.get('candidateId');
+  const resumeId = searchParams.get('resumeId');
 
-  if (!jobUrl) {
-    return NextResponse.json({ error: 'Missing jobUrl' }, { status: 400 });
+  if (!candidateId || !resumeId) {
+    return NextResponse.json({ error: 'Missing candidateId or resumeId' }, { status: 400 });
   }
 
   try {
-    // Fetch the content from the provided jobUrl
-    const response = await fetch(jobUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'text/plain',
+    const resume = await prisma.resume.findFirst({
+      where: {
+        id: parseInt(resumeId),
+        candidateId: parseInt(candidateId),
+      },
+      select: {
+        ResumefileUrl: true,
+        JobDescription: true,
       },
     });
 
-    if (!response.ok) {
-      return NextResponse.json({ error: `Failed to fetch job description: ${response.statusText}` }, { status: response.status });
+    if (!resume) {
+      return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
     }
 
-    const text = await response.text();
-    return NextResponse.json({ jobDescription: text });
+    return NextResponse.json({
+      resumeUrl: resume.ResumefileUrl,
+      jobDescription: resume.JobDescription,
+    });
   } catch (error) {
-    return NextResponse.json({ error: 'Server error while fetching job description' }, { status: 500 });
+    return NextResponse.json({ error: 'Server error while fetching resume data' }, { status: 500 });
   }
 }

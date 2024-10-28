@@ -89,24 +89,6 @@ export default function HomePageContent() {
     }
   };
 
-  // Fetch a single candidate's data including resumes and scores
-  const fetchCandidateDetails = async (id: number) => {
-    if (!id) {
-      console.error("Candidate ID is undefined");
-      return;
-    }
-    try {
-      const res = await fetch(`/api/candidates/${id}`); // Ensure id is defined
-      if (!res.ok) {
-        throw new Error("Failed to fetch candidate");
-      }
-      const data = await res.json();
-      setSelectedCandidate(data);
-      setIsModalOpen(true); // Open the modal when the candidate is selected
-    } catch (error) {
-      console.error("Error fetching candidate details:", error);
-    }
-  };
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -137,7 +119,6 @@ export default function HomePageContent() {
             </li>
           </ul>
         </div>
-
         {/* User Information and Logout */}
         <div className="mt-auto">
           <p>{session?.user?.name}</p>

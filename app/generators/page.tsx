@@ -7,7 +7,7 @@ import { ATSCompatibilityResult, Weights } from "@/types";
 import * as mammoth from "mammoth";
 
 // Set the worker path for PDF.js
-pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 export default function AtsCompatibilityCheckerApp() {
   const [weights, setWeights] = useState<Weights>({});
@@ -96,8 +96,8 @@ export default function AtsCompatibilityCheckerApp() {
     setJobDescriptionFile(file); 
   };
 
-  // Extract resume text from uploaded files
-  const extractResumeText = async (file: File) => {
+  // Extract resume and JobDescription text from uploaded files
+  const extractText = async (file: File) => {
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
 
     if (fileExtension === "pdf") {
@@ -122,11 +122,13 @@ export default function AtsCompatibilityCheckerApp() {
       throw new Error("Unsupported file format. Please upload a PDF or DOCX file.");
     }
   };
-const handleSubmit = async () => {
+
+  const handleSubmit = async () => {
     if (!resumeFiles || resumeFiles.length === 0 || (!jobDescription && !jobDescriptionFile)) {
       setErrorMessage("Please upload one or more resumes and provide the job description.");
       return;
     }
+
     if (totalWeight !== 100) {
       setErrorMessage("Total weight must equal 100%");
       return;
@@ -137,8 +139,14 @@ const handleSubmit = async () => {
   
     try {
       let finalJobDescription = jobDescription;
+      let jobFileBuffer = null;
+      let jobFileName = null;
+  
       if (jobDescriptionFile) {
-        finalJobDescription = await extractResumeText(jobDescriptionFile);
+        finalJobDescription = await extractText(jobDescriptionFile);
+        const arrayBuffer = await jobDescriptionFile.arrayBuffer();
+        jobFileBuffer = Buffer.from(arrayBuffer).toString("base64");
+        jobFileName = jobDescriptionFile.name;
       }
   
       // Get candidateId from the URL query parameters
@@ -161,7 +169,9 @@ const handleSubmit = async () => {
             fileName: resumeFile.name,
             fileBuffer: base64FileBuffer,
             candidateId,
-            jobDescription: finalJobDescription, // Pass the job description here
+            jobDescription: finalJobDescription,
+            JobBuffer: jobFileBuffer,
+            Jobfilename: jobFileName
           }),
         });
   
@@ -173,13 +183,14 @@ const handleSubmit = async () => {
         console.log("Uploaded resume and job description:", uploadResult.fileUrl);
         console.log("Resume ID:", uploadResult.resumeId);
   
-        const resumeText = await extractResumeText(resumeFile);
+        const resumeText = await extractText(resumeFile);
         resumeUploads.push({
           text: resumeText,
           fileName: resumeFile.name,
-          resumeId: uploadResult.resumeId
+          resumeId: uploadResult.resumeId,
         });
       }
+      
       const resumeTexts = resumeUploads.map((resume) => resume.text);
       const fileNames = resumeUploads.map((resume) => resume.fileName);
       const resumeId = resumeUploads.map((resume) => resume.resumeId);
@@ -195,7 +206,7 @@ const handleSubmit = async () => {
           fileNames,
           weights,
           candidateId,
-          resumeId
+          resumeId,
         }),
       });
   
@@ -216,7 +227,7 @@ const handleSubmit = async () => {
 
   return (
     <div className="container mx-auto py-10 px-4">
-      <h1 className="text-4xl font-bold mb-6 text-center text-indigo-600">
+      <h1 className="text-4xl font-bold mb-6 text-center text-black-600">
         ATS Compatibility Checker 📑
       </h1>
 

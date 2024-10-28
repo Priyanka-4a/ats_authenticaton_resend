@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { prisma } from "@/lib/prisma"; // Assuming Prisma is set up in `lib/prisma`
 
-const openaiApiKey = "";
+const openaiApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 const s3Client = new S3Client({
   region: process.env.S3_BUCKET_REGION,
   credentials: {
@@ -134,4 +134,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

@@ -15,38 +15,39 @@ export default function ModifyResume() {
 
   const searchParams = useSearchParams();
 
-  const api_key = "";
+  const api_key = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
   const provider = "GPT";
   const model = "gpt-4o";
 
   useEffect(() => {
     if (searchParams) {
-      const resumeUrlParam = searchParams.get('resumeUrl');
-      const jobUrlParam = searchParams.get('jobUrl'); 
+      const candidateId = searchParams.get('candidateId');
+      const resumeId = searchParams.get('resumeId');
 
-      if (resumeUrlParam && jobUrlParam) {
-        setResumeUrl(resumeUrlParam);
-        setJobUrl(jobUrlParam);
-        fetchResumeFile(resumeUrlParam);  // Fetch resume file from URL
-        fetchJobDescription(jobUrlParam); // Fetch job description text
+      if (candidateId && resumeId) {
+        fetchResumeData(candidateId, resumeId); // Fetch data from the server
       } else {
-        setError('Invalid resume or job URL');
+        setError('Invalid candidate or resume ID');
         setLoading(false);
       }
     }
   }, [searchParams]);
 
-  // Fetch job description text from modifyresume API
-  const fetchJobDescription = async (jobUrl: string) => {
+  const fetchResumeData = async (candidateId: string, resumeId: string) => {
     try {
-      const response = await fetch(`/api/modifyresume?jobUrl=${encodeURIComponent(jobUrl)}`);
+      const response = await fetch(`/api/modifyresume?candidateId=${candidateId}&resumeId=${resumeId}`);
       if (!response.ok) {
-        throw new Error(`Failed to fetch job description: ${response.statusText}`);
+        throw new Error(`Failed to fetch data: ${response.statusText}`);
       }
       const data = await response.json();
+      setResumeUrl(data.resumeUrl);
       setJobDescription(data.jobDescription);
+      // Fetch the resume file using the fetched URL
+      if (data.resumeUrl) {
+        await fetchResumeFile(data.resumeUrl);
+      }
     } catch (err) {
-      setError('Failed to fetch job description');
+      setError('Failed to fetch resume data');
     } finally {
       setLoading(false);
     }
@@ -71,6 +72,8 @@ export default function ModifyResume() {
   // Handle form submission and send data to the server
   const handleSubmit = async () => {
     // Ensure the recruiterPrompt is provided, and both resumeFile and jobDescription are fetched
+    console.log(recruiterPrompt);
+    
     if (!recruiterPrompt || !resumeFile || !jobDescription) {
       setErrorMessage("Please fill all fields and ensure the required files are loaded.");
       return;
@@ -109,7 +112,7 @@ export default function ModifyResume() {
   return (
     <div className="container mx-auto py-10 px-4">
       <h1 className="text-2xl font-bold mb-6 text-center text-black">
-        Modify Resume
+        Build Resume
       </h1>
       <div className="mb-4">
         <label className="block mb-2 text-gray-700"></label>
