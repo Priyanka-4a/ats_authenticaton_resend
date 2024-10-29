@@ -1,3 +1,6 @@
+-- DropTable if exists for Resume
+DROP TABLE IF EXISTS "Candidate" CASCADE;
+
 -- CreateTable
 CREATE TABLE "Candidate" (
     "id" SERIAL NOT NULL,

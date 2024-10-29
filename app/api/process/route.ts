@@ -1,18 +1,9 @@
 import { ATSCompatibilityResult } from "@/types";
 import { createOpenAiPrompt } from "@/utils/create-openai-prompt";
 import { NextRequest, NextResponse } from "next/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { prisma } from "@/lib/prisma"; // Assuming Prisma is set up in `lib/prisma`
 
 const openaiApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
-const s3Client = new S3Client({
-  region: process.env.S3_BUCKET_REGION,
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY!,
-    secretAccessKey: process.env.S3_SECRET_KEY!,
-  },
-});
-const bucketName = process.env.CANDIDATE_RESUMES;
 
 if (!openaiApiKey) {
   throw new Error("Missing required environment variable: OPENAI_API_KEY");
@@ -49,72 +40,59 @@ function parseAtsCompatibilityScore(openAiResponse: string): number {
     : 0;
 }
 
-// Function to upload a resume to S3
-async function uploadResumeToS3(file: Buffer, fileName: string) {
-  const params = {
-    Bucket: bucketName,
-    Key: fileName, // Use the candidate ID or name for unique filenames
-    Body: file,
-  };
-
-  try {
-    await s3Client.send(new PutObjectCommand(params));
-    return `https://${bucketName}.s3.${process.env.S3_BUCKET_REGION}.amazonaws.com/${fileName}`;
-  } catch (error) {
-    console.error("Error uploading file to S3:", error);
-    throw new Error("Failed to upload file to S3");
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
-    const { jobDescription, resumeTexts, fileNames, weights, candidateId, resumeId } = await request.json();
-
-    if (
-      !jobDescription ||
-      !resumeTexts ||
-      resumeTexts.length === 0 ||
-      !fileNames ||
-      fileNames.length === 0 ||
-      !candidateId ||
-      !resumeId
-    ) {
-      return NextResponse.json(
-        { error: "Job description, resume texts, file names, or candidate ID are missing." },
-        { status: 400 }
-      );
-    }
-
-    // Convert candidateId to an integer
-    const candidateIdInt = parseInt(candidateId, 10);
-
-    if (isNaN(candidateIdInt)) {
-      return NextResponse.json(
-        { error: "Invalid candidate ID format" },
-        { status: 400 }
-      );
-    }
-
+    const { jobDescription, resumeTexts, fileNames, weights, candidateId, resumeId, flag } = await request.json();
     const atsCompatibilityResults: ATSCompatibilityResult[] = [];
+    const fileNamesArray = Array.isArray(fileNames) ? fileNames : [fileNames];
 
-    for (let i = 0; i < resumeTexts.length; i++) {
-      const resumeText = resumeTexts[i];
-      const fileName = fileNames[i];
+    if (flag === 0) {
+      for (let i = 0; i < resumeTexts.length; i++) {
+        const resumeText = resumeTexts[i];
+        const fileName = fileNamesArray[i];
+        
+        const prompt = createOpenAiPrompt(resumeText, jobDescription, weights);
+        console.log("Generated Prompt for resume:", prompt);
+        
+        const openAiResponse = await fetchAtsAnalysisFromOpenAI(prompt);
+        console.log("OpenAI response:", openAiResponse);
 
-      // Create prompt for OpenAI
+        const atsCompatibilityScore = parseAtsCompatibilityScore(openAiResponse);
+        
+        await prisma.aTS_Score.create({
+          data: {
+            score: atsCompatibilityScore,
+            summary: openAiResponse,
+            candidateId: parseInt(candidateId, 10),
+            resumeId: parseInt(resumeId[i], 10),
+          },
+        });
+
+        atsCompatibilityResults.push({
+          fileName,
+          atsCompatibilityScore,
+          summary: openAiResponse,
+        });
+      }
+    } else if (flag === 1) {
+      const resumeText = resumeTexts[0];
+      const fileName = fileNamesArray[0];
+
       const prompt = createOpenAiPrompt(resumeText, jobDescription, weights);
+      console.log("Generated Prompt for generated resume:", prompt);
+
       const openAiResponse = await fetchAtsAnalysisFromOpenAI(prompt);
+      console.log("OpenAI response for generated resume:", openAiResponse);
 
-      // Parse ATS score
       const atsCompatibilityScore = parseAtsCompatibilityScore(openAiResponse);
-
-      // Store ATS score and summary in the database
-      await prisma.aTS_Score.create({
+      console.log("Parsed ATS score:", atsCompatibilityScore);
+      
+      await prisma.generated_ATS_Score.create({
         data: {
           score: atsCompatibilityScore,
           summary: openAiResponse,
-          candidateId: candidateIdInt, // Use integer ID
-          resumeId: parseInt(resumeId, 10)
+          candidateId: parseInt(candidateId, 10),
+          generatedResumeId: parseInt(resumeId, 10),
         },
       });
 
@@ -123,6 +101,11 @@ export async function POST(request: NextRequest) {
         atsCompatibilityScore,
         summary: openAiResponse,
       });
+    } else {
+      return NextResponse.json(
+        { error: "Invalid flag value. Expected 0 or 1." },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({ atsCompatibilityResults });
@@ -134,3 +117,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

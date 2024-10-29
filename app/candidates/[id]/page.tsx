@@ -58,8 +58,6 @@ export default async function CandidatePage({ params }: { params: { id: string }
           Upload Files
         </Link>
       </div>
-
-      {/* Render the ResumeTable Client Component */}
       <ResumeTable candidate={candidateSerialized} />
 
       <Link href="/" className="text-blue-500 mt-4 block">

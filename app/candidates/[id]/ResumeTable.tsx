@@ -38,6 +38,10 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
     router.push(`/modifyresume?candidateId=${candidateId}&resumeId=${resumeId}`);
   };  
 
+  const handleviewmodifiedresumesClick = (candidateId: number, resumeId: number) => {
+    router.push(`/candidates/${candidateId}/${resumeId}`)
+  };
+
   const handleJobDescriptionClick = async (index: number) => {
     setShowJobDescription(index);
     setLoading(true);
@@ -132,6 +136,12 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
                           onClick={() => handleModifyResumeClick(candidate.id, resume.id)}
                         >
                           Build Resume
+                        </button>
+                        <button
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                          onClick={() => handleviewmodifiedresumesClick(candidate.id, resume.id)}
+                        >
+                          View Modified Resumes
                         </button>
                         <button
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"

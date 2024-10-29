@@ -207,6 +207,7 @@ export default function AtsCompatibilityCheckerApp() {
           weights,
           candidateId,
           resumeId,
+          flag: 0,
         }),
       });
   
@@ -405,7 +406,7 @@ export default function AtsCompatibilityCheckerApp() {
         </div>
       )}
 
-      {atsCompatibilityResults.length > 0 && (
+        {(atsCompatibilityResults?.length ?? 0) > 0 && (
         <div className="mt-6">
           <h3 className="text-2xl font-semibold mb-4 text-gray-700 text-center">
             ATS Compatibility Results

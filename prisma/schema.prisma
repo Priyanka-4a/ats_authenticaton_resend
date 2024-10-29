@@ -1,58 +1,50 @@
-// Define your data source
-datasource db {
-  provider = "postgresql" // PostgreSQL database
-  url      = env("DATABASE_URL") // Ensure this matches your .env file
-}
-
-// Generate Prisma Client
 generator client {
   provider = "prisma-client-js"
 }
 
-// Define the User model required for NextAuth
-model User {
-  id            String    @id @default(uuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  sessions      Session[]
-  accounts      Account[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// Define the Account model required for NextAuth
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+}
+
 model Account {
   id                String  @id @default(uuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id])
+  user              User    @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
 }
 
-// Define the Session model required for NextAuth
 model Session {
   id           String   @id @default(uuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
 }
 
-// Define the VerificationToken model required for NextAuth
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -61,38 +53,60 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Define the Candidate model
 model Candidate {
-  id        Int         @id @default(autoincrement())
-  name      String
-  createdAt DateTime    @default(now())
-  
-  resumes   Resume[]     // Back relation to Resume
-  atsScores ATS_Score[]  // Back relation to ATS_Score
+  id                 Int                   @id @default(autoincrement())
+  name               String
+  createdAt          DateTime              @default(now())
+  atsScores          ATS_Score[]
+  generatedATSScores Generated_ATS_Score[]
+  generatedResumes   Generated_Resume[]
+  resumes            Resume[]
 }
 
-// Define the Resume model
 model Resume {
-  id                  Int         @id @default(autoincrement())
-  Resumefilename      String
-  ResumefileUrl       String
-  uploadedAt          DateTime    @default(now())
+  id                    Int                @id @default(autoincrement())
+  Resumefilename        String
+  ResumefileUrl         String
   JobDescriptionfileUrl String?
-  JobDescription      String
-  candidateId         Int
-  candidate           Candidate   @relation(fields: [candidateId], references: [id])
-  
-  atsScores           ATS_Score[] // Back relation to ATS_Score
+  JobDescription        String
+  uploadedAt            DateTime           @default(now())
+  candidateId           Int
+  atsScores             ATS_Score[]
+  generatedResumes      Generated_Resume[]
+  candidate             Candidate          @relation(fields: [candidateId], references: [id])
 }
 
-// Define the ATS_Score model
 model ATS_Score {
   id          Int       @id @default(autoincrement())
   score       Int
   summary     String
   createdAt   DateTime  @default(now())
   candidateId Int
-  candidate   Candidate @relation(fields: [candidateId], references: [id])
   resumeId    Int
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
   resume      Resume    @relation(fields: [resumeId], references: [id])
+}
+
+model Generated_Resume {
+  id                 Int                   @id @default(autoincrement())
+  Resumefilename     String
+  ResumefileUrl      String
+  JobDescription     String
+  uploadedAt         DateTime              @default(now())
+  candidateId        Int
+  resumeId           Int
+  generatedATSScores Generated_ATS_Score[]
+  candidate          Candidate             @relation(fields: [candidateId], references: [id])
+  resume             Resume                @relation(fields: [resumeId], references: [id])
+}
+
+model Generated_ATS_Score {
+  id                Int              @id @default(autoincrement())
+  score             Int
+  summary           String
+  createdAt         DateTime         @default(now())
+  candidateId       Int
+  generatedResumeId Int
+  candidate         Candidate        @relation(fields: [candidateId], references: [id])
+  generatedResume   Generated_Resume @relation(fields: [generatedResumeId], references: [id])
 }
