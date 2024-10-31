@@ -1,25 +1,3 @@
-// export default function NewCandidatePage() {
-//     return (
-//       <div className="container mx-auto p-6">
-//         <h1 className="text-2xl font-bold">New Candidate</h1>
-//         <p>This candidate is new. You can add their information below:</p>
-        
-//         <form method="POST" action="/api/candidates">
-//           <input
-//             type="text"
-//             name="name"
-//             placeholder="Candidate Name"
-//             className="border p-2"
-//             required
-//           />
-//           <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">
-//             Save
-//           </button>
-//         </form>
-//       </div>
-//     );
-//   }
-  
 export default function NewCandidatePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">

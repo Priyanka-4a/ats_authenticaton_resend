@@ -195,7 +195,6 @@ export default function ModifyResume() {
     formData.append("api_key", api_key);
     formData.append("provider", provider);
     formData.append("model", model);
-
     try {
       const response = await fetch("/api/server", {
         method: "POST",

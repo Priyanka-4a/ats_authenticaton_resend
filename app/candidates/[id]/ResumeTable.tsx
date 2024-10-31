@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface Resume {
   id: number;
@@ -15,10 +16,12 @@ interface Resume {
 interface ATS_Score {
   score: number;
   summary: string;
+  resumeId: number;
 }
 
 interface Candidate {
   id: number;
+  name: string;
   resumes: Resume[];
   atsScores: ATS_Score[];
 }
@@ -28,7 +31,45 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
   const [showJobDescription, setShowJobDescription] = useState<number | null>(null);
   const [jobDescriptionText, setJobDescriptionText] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [deleteConfirmIndex, setDeleteConfirmIndex] = useState<number | null>(null);
+  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null);
+
+  const { data: session } = useSession();
   const router = useRouter();
+  const params = useParams();
+  const candidateId = params?.id;
+
+  useEffect(() => {
+    const fetchCandidateData = async () => {
+      if (!session?.user?.id || !candidateId) return;
+
+      try {
+        console.log("Fetching data from API:", `/api/candidates/${candidateId}`);
+
+        const response = await fetch(`/api/candidates/${candidateId}`);
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("Candidate data fetched:", data);
+
+        if (!data) {
+          setError("Candidate data is unavailable.");
+        } else {
+          setCandidate(data);
+        }
+      } catch (error) {
+        console.error("Error fetching candidate data:", error);
+        setError("An error occurred while fetching candidate data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCandidateData();
+  }, [session?.user?.id, candidateId]);
 
   const handleViewSummaryClick = (index: number) => {
     setOpenSummaryIndex(index);
@@ -70,9 +111,41 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
     setJobDescriptionText("");
   };
 
+  const handleDeleteClick = (index: number) => {
+    setDeleteConfirmIndex(index);
+  };
+
+  const confirmDelete = async (resumeId: number) => {
+    try {
+      const response = await fetch(`/api/deleteResume`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ resumeId }),
+      });
+
+      if (response.ok) {
+        alert("Resume deleted successfully.");
+        router.refresh();
+      } else {
+        alert("Failed to delete the resume.");
+      }
+    } catch (error) {
+      alert("An error occurred while deleting the resume.");
+    } finally {
+      setDeleteConfirmIndex(null);
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
+  if (!candidate) return <p>No candidate data available.</p>;
+
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Resumes and ATS Scores</h2>
+      <h2 className="text-xl font-semibold mb-4">Resume and ATS Scores</h2>
       <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
         <thead className="bg-gray-200">
           <tr>
@@ -84,9 +157,11 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
         </thead>
         <tbody>
           {candidate.resumes.map((resume, index) => {
-            const atsScore = candidate.atsScores[index]?.score || "N/A";
             const summary = candidate.atsScores[index]?.summary || "No summary available";
             const [isDropdownOpen, setDropdownOpen] = useState(false);
+            const atsScore = candidate.atsScores.find(
+              (score) => score.resumeId === resume.id
+            )?.score || "N/A";
 
             return (
               <tr key={resume.id} className="border-b border-gray-200">
@@ -200,6 +275,29 @@ export default function ResumeTable({ candidate }: { candidate: Candidate }) {
     </div>
   </div>
 )}
+{/* Delete Confirmation Modal */}
+{deleteConfirmIndex !== null && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+            <p>Are you sure you want to delete this resume? This action cannot be undone.</p>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setDeleteConfirmIndex(null)}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md mr-2 hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => confirmDelete(candidate.resumes[deleteConfirmIndex!].id)}
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

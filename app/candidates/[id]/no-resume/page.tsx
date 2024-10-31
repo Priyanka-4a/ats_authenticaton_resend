@@ -4,10 +4,17 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+// Interface to define the structure of a Resume
+interface Resume {
+  id: number;
+  filename: string;
+}
+
 // Interface to define the candidate data structure
 interface Candidate {
   id: number;
   name: string;
+  resumes?: Resume[]; // Optional resumes array to check for existing resumes
 }
 
 export default function NoResumePage({ params }: { params: { id: string } }) {
@@ -23,6 +30,12 @@ export default function NoResumePage({ params }: { params: { id: string } }) {
       if (response.ok) {
         const data = await response.json();
         setCandidate(data); // Set the candidate data
+
+        // Check if resumes exist and redirect if they do
+        if (data.resumes && data.resumes.length > 0) {
+          router.push(`/candidates/${candidateId}`);
+          return;
+        }
       } else {
         console.error('Failed to fetch candidate');
       }
@@ -42,8 +55,9 @@ export default function NoResumePage({ params }: { params: { id: string } }) {
     router.push(`/generators?candidateId=${candidateId}`); // Pass candidateId in the URL as a query param
   };
 
+  // Show a loading message while data is being fetched
   if (isLoading) {
-    return <p>Loading...</p>; // Display a loading message while fetching data
+    return <p>Loading...</p>;
   }
 
   return (

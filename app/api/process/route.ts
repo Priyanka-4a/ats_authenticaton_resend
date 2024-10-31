@@ -32,12 +32,19 @@ async function fetchAtsAnalysisFromOpenAI(prompt: string): Promise<string> {
 
 // Function to parse ATS score from the OpenAI response
 function parseAtsCompatibilityScore(openAiResponse: string): number {
+  // Updated regex to capture "ATS Score" followed by a number or a standalone number
   const atsCompatibilityScoreMatch = openAiResponse.match(
-    /ATS\s*Score.*?(\d{1,3})/i
+    /(?:ATS\s*Score.*?(\d{1,3})|(^|\s)(\d{1,3})(\s|$))/i
   );
-  return atsCompatibilityScoreMatch && atsCompatibilityScoreMatch[1]
-    ? parseInt(atsCompatibilityScoreMatch[1], 10)
-    : 0;
+
+  // Check if either capturing group has a match
+  if (atsCompatibilityScoreMatch) {
+    return atsCompatibilityScoreMatch[1] // from "ATS Score" format
+      ? parseInt(atsCompatibilityScoreMatch[1], 10)
+      : parseInt(atsCompatibilityScoreMatch[3], 10); // from standalone number
+  }
+
+  return 0; // Default to 0 if no match
 }
 
 export async function POST(request: NextRequest) {
